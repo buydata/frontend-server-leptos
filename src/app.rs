@@ -1,63 +1,39 @@
-use leptos::*;
+use leptos::prelude::*;
 use leptos_meta::*;
-use leptos_router::*;
+use leptos_router::{
+    components::{FlatRoutes, Route, Router},
+    StaticSegment,
+};
 
 #[component]
 pub fn App() -> impl IntoView {
-    // Provides context that manages stylesheets, titles, meta tags, etc.
     provide_meta_context();
 
     view! {
-        // injects a stylesheet into the document <head>
-        // id=leptos means cargo-leptos will hot-reload this stylesheet
         <Stylesheet id="leptos" href="/pkg/frontend-server-leptos.css"/>
-
-        // sets the document title
-        <Title text="Welcome to Leptos"/>
-
-        // content for this welcome page
+        <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
         <Router>
-            <main>
-                <Routes>
-                    <Route path="" view=HomePage/>
-                    <Route path="/*any" view=NotFound/>
-                </Routes>
-            </main>
+            <FlatRoutes fallback=|| "Page not found.">
+                <Route path=StaticSegment("") view=Home/>
+            </FlatRoutes>
         </Router>
     }
 }
 
-/// Renders the home page of your application.
 #[component]
-fn HomePage() -> impl IntoView {
-    // Creates a reactive value to update the button
-    let (count, set_count) = create_signal(0);
-    let on_click = move |_| set_count.update(|count| *count += 1);
-
+fn Home() -> impl IntoView {
     view! {
-        <h1>"Welcome to Leptos!"</h1>
-        <button on:click=on_click>"Click Me: " {count}</button>
-    }
-}
+    <section class="container grid items-center gap-6 pb-8 pt-6 md:py-10">
+      <div class="flex max-w-[980px] flex-col items-start gap-2">
+        <h1 class="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
+          Плаформа по распространению данных <br class="hidden sm:inline" />
+          поможет заработать каждому.
+        </h1>
+        <p class="max-w-[700px] text-lg text-muted-foreground">
+          Данные для вашего бизнеса | Фриланс для Data Engineers
+        </p>
 
-/// 404 - Not Found
-#[component]
-fn NotFound() -> impl IntoView {
-    // set an HTTP status code 404
-    // this is feature gated because it can only be done during
-    // initial server-side rendering
-    // if you navigate to the 404 page subsequently, the status
-    // code will not be set because there is not a new HTTP request
-    // to the server
-    #[cfg(feature = "ssr")]
-    {
-        // this can be done inline because it's synchronous
-        // if it were async, we'd use a server function
-        let resp = expect_context::<leptos_actix::ResponseOptions>();
-        resp.set_status(actix_web::http::StatusCode::NOT_FOUND);
-    }
-
-    view! {
-        <h1>"Not Found"</h1>
+      </div>
+    </section>
     }
 }
